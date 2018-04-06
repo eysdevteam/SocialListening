@@ -58,7 +58,7 @@
                             <div class="col-md">
                                 <div class="rounded bg-white pl-1">                        
                                     <div class="title row no-gutters">
-                                        Porcentaje de Tweets y satisfacción de la marca
+                                        <h5 class="title"><i class="fas fa-meh"></i> Porcentaje de Tweets y satisfacción de la marca</h5>
                                     </div>
                                     <div class="row no-gutters">
                                         <div class="col-md">
@@ -91,7 +91,8 @@
                     <div class="col-md-8">
                         <div class="rounded bg-white ml-1 pl-1 h-100">                        
                               <div class="title row no-gutters">
-                                   Distribución geográfica de tweets analizados
+                                   <h5 class="title"><i class="fas fa-code-branch"></i> Distribución geográfica de tweets analizados
+                                   </h5>
                               </div>
                               <div class="row no-gutters">
                                 <div ng-controller="Mapa_Tweets" id="Mapa_Tweets"></div>
@@ -104,7 +105,7 @@
                     <div class="col-md-4">
                          <div class="rounded bg-white pl-1">                        
                               <div class="title row no-gutters">
-                                   Distribución de tweets por hora
+                                   <h5 class="title"><i class="fas fa-code-branch"></i> Distribución de tweets por hora</h5>
                               </div>
                               <div>
                                    <div ng-controller="simple-Line" id="simple-Line"></div>
@@ -117,7 +118,7 @@
                             <div class="col-md">
                                 <div class="rounded bg-white ml-1 pl-1">   
                                     <div ng-controller="card-volumen">
-                                        <h5 class="title"><i class="fas fa-cubes"></i> Volumen</h5>
+                                        <h5 class="title"><i class="fas fa-cubes"></i> Cantidad total de tweets analizados</h5>
                                             <p class="card-text volporqui text-center">{{volumen}}</p>
                                         </div>
                                     </div>
@@ -128,8 +129,8 @@
                                 <div class="col-md">
                                     <div class="rounded bg-white ml-1 mt-1 pl-1">   
                                         <div ng-controller="card-volumen">
-                                            <h5 class="title"><i class="fas fa-percent"></i> Porcentaje</h5>
-                                            <p class="card-text volporqui text-center">{{porcentaje}}%</p>
+                                            <h5 class="title"><i class="fas fa-chart-line"></i> Promedio tweets por hora</h5>
+                                            <p class="card-text volporqui text-center">{{promedio}}</p>
                                         </div>
                                     </div>
                                 </div>

@@ -94,21 +94,24 @@ function donut(indi, relleno, container,color) {
 
 // Tabla Library 
 function tabla_tweets(container, data){
+      console.log(data);
         var datasetmal = data; 
         console.log(data)
-        var tabla_tweets = d3.select("#"+container).append("table").attr("class","table");
-        
-        var tabla_tweets2 = tabla_tweets.selectAll("tr").data(data).enter().append("tr").attr("class","tabla-tweets"+container);
-        
-        
-        tabla_tweets2.append("td").attr("class","avatar"+container);
-        tabla_tweets2.append("td").attr("class",function(d,i){return "user"+container;});
-        tabla_tweets2.append("td").attr("class",function(d,i){return "tweet"+container;});
-        tabla_tweets2.append("td").attr("class",function(d,i){return "follower"+container;}); 
+        var tabla_tweets = d3.select("#"+container).append("table").attr("class","table" + " " + "m-0");
+        var encabezado = tabla_tweets.append("tr");
+        encabezado.append("th").attr("colspan","2").text("Usuario");
+        encabezado.append("th").text("Tweet");
+        encabezado.append("th").text("Seguidores");
+        var tabla_tweets2 = tabla_tweets.selectAll(".tr").data(data).enter().append("tr").attr("class","tabla-tweets"+container);      
+
+        tabla_tweets2.append("td").attr("class","avatar"+container + " " + "p-2");
+        tabla_tweets2.append("td").attr("class",function(d,i){return "user"+container + " " + "p-2";});
+        tabla_tweets2.append("td").attr("class",function(d,i){return "tweet"+container+ " " + " p-2";});
+        tabla_tweets2.append("td").attr("class",function(d,i){return "follower"+container + " " + "p-2";}); 
         d3.selectAll(".avatar"+container).append("img").attr("src","img/avatar.jpg").attr("width","25");
         d3.selectAll(".user"+container).data(data).text(function(d){return d.user;});
         var span =d3.selectAll(".tweet"+container).append("a").attr("class","tooltips1");
-        var span2 = span.append("div").attr("class", "d-inline-block text-truncate").style("max-width", "415px").data(data).text(function(d){return d.tweet;});         
+        var span2 = span.append("div").attr("class", "d-inline-block text-truncate").style("max-width", "415px").style("cursor","pointer").data(data).text(function(d){return d.tweet;});         
         span2.append("div");
         span2.append("span").attr("class","tooltips1").text(function(d){return d.tweet;});
       
@@ -896,7 +899,7 @@ function map(container,compara){
 function SimplelineGraph(data, container) {
 
 // set the dimensions and margins of the graph
-var margin = {top: 20, right: 20, bottom: 30, left: 30},
+var margin = {top: 20, right: 20, bottom: 33, left: 30},
     width = parseInt(d3.select(container).style("width")) - margin.left - margin.right;
     height = 155;
 

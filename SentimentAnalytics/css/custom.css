@@ -23,7 +23,7 @@
 }
 
 .titles {
-    font-family: 'Quicksand', sans-serif !important;
+  font-family: 'Quicksand', sans-serif !important;
 	font-size: 9px !important;
 }
 
@@ -71,7 +71,7 @@ image {
 }
 
 .volporqui {
-	font-size:3.67rem !important;
+	font-size:3.745rem !important;
 }
 
 .tweets_content {
@@ -110,7 +110,7 @@ a.tooltips1 span:after {
 }
 a:hover.tooltips1 span {
   visibility: visible;
-  opacity: 0.8;
+  opacity: 1;
   top: 30px;
   left: 0;
   margin-left: 0px;
