@@ -27,9 +27,14 @@
 	font-size: 9px !important;
 }
 
-.line {
+.lineP {
   fill: none;
-  stroke: steelblue;
+  stroke:#B8E8FF;
+  stroke-width: 1px;
+}
+.lineN {
+  fill: none;
+  stroke:#FFAD9D;
   stroke-width: 1px;
 }
 
@@ -39,4 +44,28 @@
 
 .axisColor line{
 	stroke:#EDECEC;
+}
+
+
+.pathmap {
+  stroke: white;
+  stroke-width: 0.25px;
+  fill: #D0D3D4;
+} 
+
+image {
+	-webkit-filter: grayscale(100%);
+	filter: grayscale(100%);
+}
+
+.circle {
+	opacity: 0.2;
+} 
+
+.mark{
+	border-image: 30 30 repeat;
+}
+.mark:hover {
+	opacity: 0.3;
+
 }

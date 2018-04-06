@@ -7,6 +7,8 @@
           <link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet">
           <!-- Import CSS Style -->
           <link rel="stylesheet" type="text/css" href="css/custom.css"> 
+          <!--Import Style
+          <link rel="stylesheet" type="text/css" href="css/style.css">-->
           <!-- Import D3.js -->
           <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
           <!-- Import Bootstrap -->
@@ -26,6 +28,8 @@
           <!-- Import D3.js Library -->
           <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
           <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
+          <!--Import libreria topojson-->
+          <script src="http://d3js.org/topojson.v0.min.js"></script>
      </head>
      <body style="background-color: #EDECEC" ng-app="galatea">
 
@@ -36,19 +40,55 @@
                <div class="row no-gutters ml-1 mr-1 mt-1">
                     <!-- Definición de Columnas..., Extensión de md-3 y col-12 para la mínima resolución -->
 
-                    <div class="col-md-6 h-20">
-                         <div class="row no-gutters">
-                              <div class="col-md">
-                                   <div class="rounded bg-white pl-1">                        
-                                        <div class="title row no-gutters">
-                                             title
+                    <div class="col-md-4 h-20">
+                                    <div class="row no-gutters mb-1">
+                                        <div class="col-md">
+                                            <div class="rounded bg-white pl-1">
+                                                <div class="row no-gutters justify-content-center">                        
+                                                    <img src="img/titulo-estadodeopinion.png" width="450" alt="">
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div>
-                                             <div ng-controller="Line" id="Line"></div>
+                                    </div>
+                                    <div class="row no-gutters">
+                                        <div class="col-md">
+                                            <div class="rounded bg-white pl-1">                        
+                                                    <div class="title row no-gutters">
+                                                        Porcentaje de Tweets
+                                                    </div>
+                                                    <div class="row no-gutters">
+                                                       <div class="col-md">
+
+                                                          <div class="row no-gutters justify-content-center">
+                                                              <div ng-controller="Positive_Tweets" id="Positive_Tweets"></div>
+                                                          </div>
+                                                       </div>
+                                                       <div class="col-md">
+                                                          <div class="row no-gutters justify-content-center">
+                                                              <div ng-controller="Negative_Tweets" id="Negative_Tweets"></div>
+                                                          </div>
+                                                       </div>
+                                                    </div>
+                                            </div>
                                         </div>
-                                   </div>
-                              </div>
-                              <div class="col-md">
+                                    </div>
+                                    <div class="row no-gutters mt-1">
+                                        <div class="col-md">
+                                            <div class="rounded bg-white pl-1">                        
+                                                <div class="title row no-gutters">
+                                                    title
+                                                </div>
+                                                <div>
+                                                    <div ng-controller="Line" id="Line"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                              <!--<div class="col-md">
+                                   
+                              </div>-->
+                              <!--<div class="col-md">
                                    <div class="rounded bg-white pl-1 ml-1">                        
                                         <div class="title row no-gutters">
                                              title
@@ -57,43 +97,18 @@
                                              graph
                                         </div>
                                    </div>
-                              </div>
-                         </div>
+                              </div>-->
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-8">
                          <div class="rounded bg-white ml-1 pl-1 h-100">                        
                               <div class="title row no-gutters">
                                    title
                               </div>
-                              <div>
-                                   graph
+                              <div class="row no-gutters">
+                                <div ng-controller="Mapa_Tweets" id="Mapa_Tweets"></div>
                               </div>
                          </div>
-                    </div>
-                    <div class="col-md-6 h-20">                         
-                         <div class="row no-gutters mt-1">
-                              <div class="col-md">
-                                   <div class="rounded bg-white pl-1">                        
-                                        <div class="title row no-gutters">
-                                             Porcentaje de Tweets Positivos
-                                        </div>
-                                        <div class="row no-gutters justify-content-center">
-                                             <div ng-controller="Positive_Tweets" id="Positive_Tweets"></div>
-                                        </div>
-                                   </div>
-                              </div>
-                              <div class="col-md">
-                                   <div class="rounded bg-white ml-1 pl-1">                        
-                                        <div class="title row no-gutters">
-                                             Porcentaje de Tweets Negativos
-                                        </div>
-                                        <div class="row no-gutters justify-content-center">
-                                             <div ng-controller="Negative_Tweets" id="Negative_Tweets"></div>
-                                        </div>
-                                   </div>
-                              </div>
-                         </div>
-                    </div>                                
+                    </div>                           
                </div>
                <div class="row no-gutters ml-1 mr-1 mt-1 h-40">
                     <div class="col-md">
@@ -102,7 +117,7 @@
                                    title
                               </div>
                               <div>
-                                   graph
+                                   <div ng-controller="simple-Line" id="simple-Line"></div>
                               </div>
                          </div>
                     </div>
@@ -113,7 +128,7 @@
                                         <nav class="navbar navbar-expand-sm navbar-fixed-top justify-content-center title">
                                              <ul class="navbar-nav nav-tabs nav-justified">   
                                                   <li class="nav-item" ng-class="{active:tabs.tab===1}">
-                                                      <a ng-click="tabs.selectTab(1)" class="btn">Tweets Negativos de las Personas más Influyentes</a>
+                                                      <a ng-click="tabs.selectTab(1)" class="btn">Tweets Positivos de las Personas más Influyentes</a>
                                                   </li>
                                                   <li class="nav-item" ng-class="{active:tabs.tab===2}">
                                                        <a ng-click="tabs.selectTab(2)" class="btn">Tweets Negativos de las Personas menos Influyentes</a>
@@ -122,8 +137,8 @@
                                         </nav>
                                         <div class="row no gutters ml-1 mr-1">
                                              <div class="col-12 rounded bg-white">
-                                                  <div ng-show="tabs.tab===1">HOLA1</div>
-                                                  <div ng-show="tabs.tab===2">HOLA2</div>
+                                                  <div ng-controller="Tabla-Tweets-positivo" id="tweets-positivos" ng-show="tabs.tab===1"></div>
+                                                  <div ng-controller="Tabla-Tweets-negativo" id="tweets-negativos" ng-show="tabs.tab===2"></div>
                                              </div>
                                         </div>
                                    </div>

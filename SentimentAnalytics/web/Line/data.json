@@ -1,14 +1,17 @@
 [
       {
-         "Date": 1999,        
-         "Exports": "20",
+         "Fecha": 1999,        
+         "Positivo": "20",
+         "Negativo": "40"
       },
       {
-         "Date": 2000,         
-         "Exports": "115"      
+         "Fecha": 2000,         
+         "Positivo": "115",
+         "Negativo": "20"      
       },
       {
-         "Date": 2006,         
-         "Exports": "79"
+         "Fecha": 2006,         
+         "Positivo": "79",
+         "Negativo": "20"
       }
    ]

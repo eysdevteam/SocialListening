@@ -28,21 +28,21 @@ function table(dataset, columnas, container){
 }
 
 // Donut Library
-function donut(indi, relleno, container) {
-   
+function donut(indi, relleno, container,color) {
+
   var width = 100;
       height = 150,
       radius = Math.min(width, height) / 2;
-        
-  var color  = d3.scale.ordinal()
-      .range(["#0084B4","#EBE8E8"]);
+          var color  = d3.scale.ordinal()
+         .range([color,"#EBE8E8"]);
+       
 
   var pie = d3.layout.pie()
       .sort(null);
 
   var arc = d3.svg.arc()
-      .innerRadius(radius - 5)
-      .outerRadius(radius - 10);
+      .innerRadius(radius - 2)
+      .outerRadius(radius - 7);
 
   var svg = d3.select(container).append("svg")
       .attr("width", width)
@@ -61,7 +61,7 @@ function donut(indi, relleno, container) {
     .text(relleno[0]+"%")
     .attr("class", "units-label")
     .attr("x", ((radius/2)*-1)-5)
-    .attr("y", radius-45)
+    .attr("y", radius-47)
     .attr("font-size", 20);  
   }
   else{
@@ -69,50 +69,49 @@ function donut(indi, relleno, container) {
     .text(relleno[0]+"%")
     .attr("class", "units-label")
     .attr("x", ((radius/2)*-1)-9)
-    .attr("y", radius-45)
+    .attr("y", radius-47)
     .attr("font-size", 20);
   }   
+
+  var titulo;
+  var centrado;
+
+  if(container === "#Positive_Tweets"){
+    titulo = "Positivos";
+    centrado = ((radius/2)*-1)+2;
+  }
+  else{
+    titulo = "Negativos";
+    centrado = ((radius/2)*-1)
+  }
     
   svg.append("text")
-    .text("Tweets")
-    .attr("x", ((radius/2)*-1)+8)
-    .attr("y", radius-27)
+    .text(titulo)
+    .attr("x", centrado)
+    .attr("y", radius-32)
     .attr("font-size", 12);
 }
 
 // Tabla Library 
-function tabla(container){
-    d3.json("web/tablebest/table.json", function(error, data) {
+function tabla_tweets(container, data){
         var datasetmal = data; 
-        d3.select(".titulos").text("Top - Mejores IPS");
-        d3.select(container).selectAll("tr").data(datasetmal).enter().append("tr").attr("class","ipsre");
-        d3.selectAll(".ipsre").append("td").attr("class",function(d,i){return "id";});
-        d3.selectAll(".ipsre").append("td").attr("class",function(d,i){return "ips";});
-        d3.selectAll(".ipsre").append("td").attr("class",function(d,i){return "goodbad";});
-        d3.selectAll(".id").data(datasetmal).text(function(d){return d.id;});
-        d3.selectAll(".ips").data(datasetmal).text(function(d){return d.name.toLowerCase();});
-        d3.selectAll(".goodbad").append("i").attr("class","fa fa-chevron-circle-up greencolor");
+        console.log(data)
+        var tabla_tweets = d3.select("#"+container).append("table");
+        
+        var tabla_tweets2 = tabla_tweets.selectAll("tr").data(data).enter().append("tr").attr("class","tabla-tweets"+container);
+        
+        
+        tabla_tweets2.append("td").attr("class","avatar"+container);
+        tabla_tweets2.append("td").attr("class",function(d,i){return "user"+container;});
+        tabla_tweets2.append("td").attr("class",function(d,i){return "tweet"+container;});
+        tabla_tweets2.append("td").attr("class",function(d,i){return "follower"+container;});
+        d3.selectAll(".avatar"+container).append("img").attr("src","img/avatar.png").attr("width","25");
+        d3.selectAll(".user"+container).data(data).text(function(d){return d.user;});
+        d3.selectAll(".tweet"+container).data(data).text(function(d){return d.tweet;});
+        d3.selectAll(".follower"+container).data(data).text(function(d){return d.follower;});
+        /*d3.selectAll(".ips").data(datasetmal).text(function(d){return d.name.toLowerCase();});
+        d3.selectAll(".goodbad").append("i").attr("class","fa fa-chevron-circle-up greencolor");*/
 
-        d3.select(".goodbutton").on("click",function(){
-            d3.json("web/tableworst/table.json", function(error, data) {
-                var dataset = data; 
-                d3.select(".titulos").text("Top - IPS Deficientes");
-                d3.selectAll(".id").data(dataset).text(function(d){return d.id;});
-                d3.selectAll(".ips").data(dataset).text(function(d){return d.name.toLowerCase();});
-                d3.selectAll("i").attr("class","fa fa-chevron-circle-down redcolor");
-            });
-        });
-    });
-
-    d3.select(".badbutton").on("click",function(){
-        d3.json("web/tablebest/table.json", function(error, data) {
-            var datasetmal = data; 
-            d3.select(".titulos").text("Top - Mejores IPS");
-            d3.selectAll(".id").data(datasetmal).text(function(d){return d.id;});
-            d3.selectAll(".ips").data(datasetmal).text(function(d){return d.name.toLowerCase();});
-            d3.selectAll("i").attr("class","fa fa-chevron-circle-up greencolor");
-        });
-    });
 }
 
 
@@ -720,8 +719,12 @@ var y = d3.scaleLinear().range([height, 0]);
 
 // define the line
 var valueline = d3.line()
-    .x(function(d) { return x(d.Date); })
-    .y(function(d) { return y(d.Exports); });
+    .x(function(d) { return x(d.Fecha); })
+    .y(function(d) { return y(d.Positivo); });
+
+var valueline2 = d3.line()
+    .x(function(d) { return x(d.Fecha); })
+    .y(function(d) { return y(d.Negativo); });
   
 // append the svg obgect to the body of the page
 // appends a 'group' element to 'svg'
@@ -737,26 +740,51 @@ function draw(data) {
     
   // format the data
   data.forEach(function(d) {
-      d.Date = parseTime(d.Date);
-      d.Exports = +d.Exports;
+      d.Fecha = parseTime(d.Fecha);
+      d.Positivo = +d.Positivo;
+      d.Negativo = +d.Negativo;
   });
   
   // sort years ascending
   data.sort(function(a, b){
-    return a["Date"]-b["Date"];
+    return a["Fecha"]-b["Fecha"];
   })
  
   // Scale the range of the data
-  x.domain(d3.extent(data, function(d) { return d.Date; }));
+  x.domain(d3.extent(data, function(d) { return d.Fecha; }));
   y.domain([0, d3.max(data, function(d) {
-    return Math.max(d.Exports); })]);
+    return Math.max(d.Positivo,d.Negativo); })]);
   
   // Add the valueline path.
   svg.append("path")
       .data([data])
-      .attr("class", "line")
+      .attr("class", "lineP")
       .attr("d", valueline);
   
+  svg.append("path")
+      .data([data])
+      .attr("class", "lineN")
+      .attr("d", valueline2);
+console.log(x);
+for(var i=0;i<data.length;i++){
+  svg.append("circle")
+  .data(data)
+  .attr("cx",x(data[i].Fecha))
+  .attr("cy",y(data[i].Positivo))
+  .attr("r",4)
+  .attr("fill","#66BEE7");
+
+   svg.append("circle")
+  .data(data)
+  .attr("cx",x(data[i].Fecha))
+  .attr("cy",y(data[i].Negativo))
+  .attr("r",4)
+  .attr("fill","#E17C72");
+};
+
+  
+  
+
   // Add the X Axis
   svg.append("g")
       .attr("class", "axisColor")
@@ -771,3 +799,167 @@ function draw(data) {
   
   draw(data);
 }
+
+function map(container,compara){
+  var margin = {
+    top: 20, 
+    right:30, 
+    bottom: 20, 
+    left: 30
+  },
+  height = 435;//parseInt(d3.select(container).style("height")) - margin.top - margin.bottom;
+  width = 900;//parseInt(d3.select(container).style("width"));
+  // Ajustes de proyección para mercator   
+  var projection = d3.geo.mercator()
+    .center([0, 8])// centro del mapa en grados
+    .scale(width/7.5)// zoomlevel
+    .rotate([00,0]);// map-rotation
+  //Selección de container
+  var svg = d3.select(container).append("svg")
+    .attr("width", width)
+    .attr("height", height);
+  // definición de "path" y declaración de escala(projection)
+  var path = d3.geo.path()
+    .projection(projection);
+  //agrupa las capas svg
+  var g = svg.append ("g");
+  // Carga de datos y visualización del mapa en el canvas
+  d3.json("js/datos/map.json", function(error, topology) { 
+      var pathmap = g.selectAll("path")
+          .data(topojson.object(topology, topology.objects.countries)
+          .geometries)
+          .enter()
+          .append("path")
+          .attr("d", path)
+          .attr("class","pathmap")
+          .on("mouseover", function(d,i){ d3.select(this).style('fill','#AED6F1');})
+          .on("mouseout",function(d,i){d3.select(this).style('fill','#D0D3D4')}) 
+  });
+
+  // Carga  JSON de marcadores en el mapa
+  d3.json("js/datos/countries.json", function(error, marks) {
+      array1 = [];
+      // Ciclo de comparación entre json guia y json generado por modelo
+      for (var i = 0 ; i < compara.length; i++) {
+          if(compara[i].location.toLowerCase()=="null"){
+            var textw= svg.append("text").text("Nota: Tweets sin ubicación disponible:"+ "" + compara[i].count)
+              .attr("transform", function(d) {return "translate(" + projection([-171,-62]) + ")";})
+              .style("font-size","12")
+              .style("font-family", "'Quicksand', sans-serif");
+            }
+          else{}
+        for (var j = 0; j < marks.length; j++) {
+          if(compara[i].location.toLowerCase() === marks[j].location.toLowerCase()){
+          marks[j].categ=compara[i].cat;
+          marks[j].cant=compara[i].count;
+            array1.push(marks[j]);
+          }
+          else{
+          }
+        }
+      }
+      // Generación de marcadores a partir de comparación realizada
+      var marcador = svg.selectAll(".mark")
+        .data(array1)
+        .enter()
+        .append("image")
+        .attr('class',function(d){return "mark" +" "+"mark"+d.categ})
+        .attr('width', 20)
+        .attr('height', 20)
+        .style("cursor","pointer")
+        .attr("href",function(d){return'img/twitter'+d.categ+'.png'})
+        .attr("transform", function(d) {return "translate(" + projection([d.lng-4.5,d.lat-(-5.00)]) + ")";})
+        .append("title").text(function(d) {return d.name +"\n"+"Total de tweets:"+" "+d.cant;});
+      // Generación de convenciones
+      var imagenconv = svg.append("image")
+        .attr('width', width/11)
+        .attr('height', height/4.5)
+        .attr("href",function(d){return'img/convenciones.jpg'})
+        .attr("transform", function(d) {
+          return "translate(" + projection([-180,4]) + ")";})
+  });
+}
+
+
+/*Line graph simple*/
+
+function SimplelineGraph(data, container) {
+
+// set the dimensions and margins of the graph
+var margin = {top: 20, right: 20, bottom: 30, left: 30},
+    width = parseInt(d3.select(container).style("width")) - margin.left - margin.right;
+    height = 150;
+
+// parse the date / time
+var parseTime = d3.timeParse("%Y");
+
+// set the ranges
+var x = d3.scaleTime().range([0, width]);
+var y = d3.scaleLinear().range([height, 0]);
+
+// define the line
+var valueline = d3.line()
+    .x(function(d) { return x(d.Fecha); })
+    .y(function(d) { return y(d.Positivo); });
+
+  
+// append the svg obgect to the body of the page
+// appends a 'group' element to 'svg'
+// moves the 'group' element to the top left margin
+var svg = d3.select(container).append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+function draw(data) {
+    
+  // format the data
+  data.forEach(function(d) {
+      d.Fecha = parseTime(d.Fecha);
+      d.Positivo = +d.Positivo;
+  });
+  
+  // sort years ascending
+  data.sort(function(a, b){
+    return a["Fecha"]-b["Fecha"];
+  })
+ 
+  // Scale the range of the data
+  x.domain(d3.extent(data, function(d) { return d.Fecha; }));
+  y.domain([0, d3.max(data, function(d) {
+    return Math.max(d.Positivo); })]);
+  
+  // Add the valueline path.
+  svg.append("path")
+      .data([data])
+      .attr("class", "lineP")
+      .attr("d", valueline);
+  
+for(var i=0;i<data.length;i++){
+  svg.append("circle")
+  .data(data)
+  .attr("cx",x(data[i].Fecha))
+  .attr("cy",y(data[i].Positivo))
+  .attr("r",4)
+  .attr("fill","#66BEE7");
+
+};  
+
+  // Add the X Axis
+  svg.append("g")
+      .attr("class", "axisColor")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x));
+
+  // Add the Y Axis
+  svg.append("g")
+      .attr("class", "axisColor")
+      .call(d3.axisLeft(y));
+  }
+  
+  draw(data);
+}
+
+
