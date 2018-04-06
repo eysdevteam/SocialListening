@@ -7,8 +7,10 @@
           <link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet">
           <!-- Import CSS Style -->
           <link rel="stylesheet" type="text/css" href="css/custom.css"> 
-          <!--Import Style
-          <link rel="stylesheet" type="text/css" href="css/style.css">-->
+          <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+          <!--Import font-awesome-->
+          <script defer src="https://use.fontawesome.com/releases/v5.0.9/js/all.js" integrity="sha384-8iPTk2s/jMVj81dnzb/iFR2sdA7u06vHJyyLlAd4snFpCl/SnyUjRrbdJsw1pGIl" crossorigin="anonymous"></script>
           <!-- Import D3.js -->
           <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
           <!-- Import Bootstrap -->
@@ -41,68 +43,55 @@
                     <!-- Definición de Columnas..., Extensión de md-3 y col-12 para la mínima resolución -->
 
                     <div class="col-md-4 h-20">
-                                    <div class="row no-gutters mb-1">
-                                        <div class="col-md">
-                                            <div class="rounded bg-white pl-1">
-                                                <div class="row no-gutters justify-content-center">                        
-                                                    <img src="img/titulo-estadodeopinion.png" width="450" alt="">
-                                                </div>
-                                            </div>
-                                        </div>
+
+                        <div class="row no-gutters mb-1">
+                            <div class="col-md">
+                                <div class="rounded bg-white pl-1">
+                                    <div class="row no-gutters justify-content-center">                        
+                                        <img src="img/titulo-estadodeopinion.png" width="450" alt=""></img>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row no-gutters">
+                            <div class="col-md">
+                                <div class="rounded bg-white pl-1">                        
+                                    <div class="title row no-gutters">
+                                        Porcentaje de Tweets y satisfacción de la marca
                                     </div>
                                     <div class="row no-gutters">
                                         <div class="col-md">
-                                            <div class="rounded bg-white pl-1">                        
-                                                    <div class="title row no-gutters">
-                                                        Porcentaje de Tweets
-                                                    </div>
-                                                    <div class="row no-gutters">
-                                                       <div class="col-md">
-
-                                                          <div class="row no-gutters justify-content-center">
-                                                              <div ng-controller="Positive_Tweets" id="Positive_Tweets"></div>
-                                                          </div>
-                                                       </div>
-                                                       <div class="col-md">
-                                                          <div class="row no-gutters justify-content-center">
-                                                              <div ng-controller="Negative_Tweets" id="Negative_Tweets"></div>
-                                                          </div>
-                                                       </div>
-                                                    </div>
+                                            <div class="row no-gutters justify-content-center">
+                                                <div ng-controller="Positive_Tweets" id="Positive_Tweets"></div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row no-gutters mt-1">
                                         <div class="col-md">
-                                            <div class="rounded bg-white pl-1">                        
-                                                <div class="title row no-gutters">
-                                                    title
-                                                </div>
-                                                <div>
-                                                    <div ng-controller="Line" id="Line"></div>
-                                                </div>
+                                            <div class="row no-gutters justify-content-center">
+                                                <div ng-controller="Negative_Tweets" id="Negative_Tweets"></div>
                                             </div>
                                         </div>
                                     </div>
-
-                              <!--<div class="col-md">
-                                   
-                              </div>-->
-                              <!--<div class="col-md">
-                                   <div class="rounded bg-white pl-1 ml-1">                        
-                                        <div class="title row no-gutters">
-                                             title
-                                        </div>
-                                        <div>
-                                             graph
-                                        </div>
-                                   </div>
-                              </div>-->
+                                </div>
+                            </div>
+                        </div>
+            
+                        <div class="row no-gutters">
+                            <div class="col-md">
+                                <div class="rounded bg-white pl-1 mb-1000">                        
+            
+                                    <div class="col-md">
+                                        <div ng-controller="Line" id="Line"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
                     <div class="col-md-8">
-                         <div class="rounded bg-white ml-1 pl-1 h-100">                        
+                        <div class="rounded bg-white ml-1 pl-1 h-100">                        
                               <div class="title row no-gutters">
-                                   title
+                                   Distribución geográfica de tweets analizados
                               </div>
                               <div class="row no-gutters">
                                 <div ng-controller="Mapa_Tweets" id="Mapa_Tweets"></div>
@@ -110,31 +99,57 @@
                          </div>
                     </div>                           
                </div>
+
                <div class="row no-gutters ml-1 mr-1 mt-1 h-40">
-                    <div class="col-md">
+                    <div class="col-md-4">
                          <div class="rounded bg-white pl-1">                        
                               <div class="title row no-gutters">
-                                   title
+                                   Distribución de tweets por hora
                               </div>
                               <div>
                                    <div ng-controller="simple-Line" id="simple-Line"></div>
                               </div>
                          </div>
                     </div>
-                    <div class="col-md">
-                         <div class="rounded bg-white ml-1 pl-1">                      
-                              <div class="row no gutters ml-1 mr-1 ">
-                                   <div class="col-12" ng-controller="TabsController as tabs">
+
+                    <div class="col-md-2">
+                        <div class="row no-gutters">
+                            <div class="col-md">
+                                <div class="rounded bg-white ml-1 pl-1">   
+                                    <div ng-controller="card-volumen">
+                                        <h5 class="title"><i class="fas fa-cubes"></i> Volumen</h5>
+                                            <p class="card-text volporqui text-center">{{volumen}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row no-gutters">
+                                <div class="col-md">
+                                    <div class="rounded bg-white ml-1 mt-1 pl-1">   
+                                        <div ng-controller="card-volumen">
+                                            <h5 class="title"><i class="fas fa-percent"></i> Porcentaje</h5>
+                                            <p class="card-text volporqui text-center">{{porcentaje}}%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="rounded bg-white ml-1 pl-1">                      
+                                <div class="row no gutters ml-1 mr-1 ">
+                                    <div class="col-12" ng-controller="TabsController as tabs">
                                         <nav class="navbar navbar-expand-sm navbar-fixed-top justify-content-center title">
-                                             <ul class="navbar-nav nav-tabs nav-justified">   
-                                                  <li class="nav-item" ng-class="{active:tabs.tab===1}">
-                                                      <a ng-click="tabs.selectTab(1)" class="btn">Tweets Positivos de las Personas más Influyentes</a>
-                                                  </li>
-                                                  <li class="nav-item" ng-class="{active:tabs.tab===2}">
-                                                       <a ng-click="tabs.selectTab(2)" class="btn">Tweets Negativos de las Personas menos Influyentes</a>
-                                                  </li>
+                                            <ul class="navbar-nav nav-tabs nav-justified">   
+                                                <li class="nav-item" ng-class="{active:tabs.tab===1}">
+                                                    <a ng-click="tabs.selectTab(1)" class="btn">Tweets Positivos de las Personas más Influyentes</a>
+                                                </li>
+                                                <li class="nav-item" ng-class="{active:tabs.tab===2}">
+                                                    <a ng-click="tabs.selectTab(2)" class="btn">Tweets Negativos de las Personas menos Influyentes</a>
+                                                </li>
                                              </ul>
                                         </nav>
+                                        
                                         <div class="row no gutters ml-1 mr-1">
                                              <div class="col-12 rounded bg-white">
                                                   <div ng-controller="Tabla-Tweets-positivo" id="tweets-positivos" ng-show="tabs.tab===1"></div>

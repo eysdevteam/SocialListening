@@ -31,7 +31,7 @@ function table(dataset, columnas, container){
 function donut(indi, relleno, container,color) {
 
   var width = 100;
-      height = 150,
+      height = 170,
       radius = Math.min(width, height) / 2;
           var color  = d3.scale.ordinal()
          .range([color,"#EBE8E8"]);
@@ -96,7 +96,7 @@ function donut(indi, relleno, container,color) {
 function tabla_tweets(container, data){
         var datasetmal = data; 
         console.log(data)
-        var tabla_tweets = d3.select("#"+container).append("table");
+        var tabla_tweets = d3.select("#"+container).append("table").attr("class","table");
         
         var tabla_tweets2 = tabla_tweets.selectAll("tr").data(data).enter().append("tr").attr("class","tabla-tweets"+container);
         
@@ -104,15 +104,25 @@ function tabla_tweets(container, data){
         tabla_tweets2.append("td").attr("class","avatar"+container);
         tabla_tweets2.append("td").attr("class",function(d,i){return "user"+container;});
         tabla_tweets2.append("td").attr("class",function(d,i){return "tweet"+container;});
-        tabla_tweets2.append("td").attr("class",function(d,i){return "follower"+container;});
-        d3.selectAll(".avatar"+container).append("img").attr("src","img/avatar.png").attr("width","25");
+        tabla_tweets2.append("td").attr("class",function(d,i){return "follower"+container;}); 
+        d3.selectAll(".avatar"+container).append("img").attr("src","img/avatar.jpg").attr("width","25");
         d3.selectAll(".user"+container).data(data).text(function(d){return d.user;});
-        d3.selectAll(".tweet"+container).data(data).text(function(d){return d.tweet;});
+        var span =d3.selectAll(".tweet"+container).append("a").attr("class","tooltips1");
+        var span2 = span.append("div").attr("class", "d-inline-block text-truncate").style("max-width", "415px").data(data).text(function(d){return d.tweet;});         
+        span2.append("div");
+        span2.append("span").attr("class","tooltips1").text(function(d){return d.tweet;});
+      
+      
+
+   
+
         d3.selectAll(".follower"+container).data(data).text(function(d){return d.follower;});
         /*d3.selectAll(".ips").data(datasetmal).text(function(d){return d.name.toLowerCase();});
         d3.selectAll(".goodbad").append("i").attr("class","fa fa-chevron-circle-up greencolor");*/
 
 }
+
+ //.append("title").text(function(d) {return d.name +"\n"+"Total de tweets:"+" "+d.cant;});
 
 
 // Tablavar Library
@@ -888,7 +898,7 @@ function SimplelineGraph(data, container) {
 // set the dimensions and margins of the graph
 var margin = {top: 20, right: 20, bottom: 30, left: 30},
     width = parseInt(d3.select(container).style("width")) - margin.left - margin.right;
-    height = 150;
+    height = 155;
 
 // parse the date / time
 var parseTime = d3.timeParse("%Y");

@@ -70,5 +70,12 @@ app.controller("Line", function ($scope, $http) {
     });
 });
 
-
+/*Grafica de linea simple*/
+app.controller("card-volumen", function($scope, $http) {
+    $http.get("web/Volumen/volumen.json").then(function(data){
+        $scope.datos = data.data;
+        $scope.volumen = $scope.datos[0].volumen; 
+        $scope.porcentaje = $scope.datos[0].porcentaje;    
+    });
+});
 
