@@ -94,9 +94,6 @@ function donut(indi, relleno, container,color) {
 
 // Tabla Library 
 function tabla_tweets(container, data){
- //     console.log(data);
-        var datasetmal = data; 
-        //console.log(data)
         var tabla_tweets = d3.select("#"+container).append("table").attr("class","table" + " " + "m-0");
         var encabezado = tabla_tweets.append("tr");
         encabezado.append("th").attr("colspan","2").text("Usuario");
@@ -110,20 +107,37 @@ function tabla_tweets(container, data){
         tabla_tweets2.append("td").attr("class",function(d,i){return "followers"+container + " " + "p-2";}); 
         d3.selectAll(".avatar"+container).append("img").attr("src","img/avatar.jpg").attr("width","25");
         d3.selectAll(".user"+container).data(data).text(function(d){return d.user;});
-        var span =d3.selectAll(".value"+container).append("a").attr("class","tooltips1");
-        var span2 = span.append("div").attr("class", "d-inline-block text-truncate").style("max-width", "415px").style("cursor","pointer").data(data).text(function(d){return d.value;});         
-        span2.append("div");
-        span2.append("span").attr("class","tooltips1").text(function(d){return d.value;});
-      
-      
+        var span =d3.selectAll(".value"+container).append("a").attr("class","tooltips1").attr("data-toggle","modal").attr("data-target","#modalBullet");
+        
+        //data-toggle="modal"
+        var span2 = span.append("div").attr("class", "d-inline-block text-truncate").style("max-width", "415px").style("cursor","pointer").data(data).text(function(d){ return d.value;});         
+        span2.on("click", function(d){
+          d3.selectAll(".trModal").remove();
+          d3.selectAll("tdModal").remove();
+          let modal_title = d3.selectAll(".modal-title-bullet")
+          modal_title.text(d.user);
+          d3.select(this).each(function(d) {
+                  //d.data.forEach((data, index) => {
+                    d3.selectAll(".modal-bullet")
+                      .append("tr")
+                      .attr("class", "trModal")
+                      .append("td")
+                      .attr("class", "tdModal")
+                      .text(d.value.charAt(0).toUpperCase() + d.value.slice(1))
+                      .style("border-bottom","1px solid #EBE8E8")
+                      .style("font-size","1em");
+                    //})
+                  })
+        })
 
-   
+  
 
         d3.selectAll(".followers"+container).data(data).text(function(d){return d.followers;});
         /*d3.selectAll(".ips").data(datasetmal).text(function(d){return d.name.toLowerCase();});
         d3.selectAll(".goodbad").append("i").attr("class","fa fa-chevron-circle-up greencolor");*/
 
 }
+
 
  //.append("title").text(function(d) {return d.name +"\n"+"Total de tweets:"+" "+d.cant;});
 
@@ -891,7 +905,9 @@ function map(container,compara){
         .attr('width', 20)
         .attr('height', 20)
         .style("cursor","pointer")
-        .attr("href",function(d){return'img/twitter'+d.categ+'.png'})
+        .attr("href",function(d){
+          
+          return'img/twitter'+ d.categ+'.png'})
         .attr("transform", function(d) {return "translate(" + projection([d.lng-4.5,d.lat-(-5.00)]) + ")";})
         .append("title").text(function(d) {return d.name +"\n"+"Total de tweets:"+" "+d.cant;});
       // Generación de convenciones
