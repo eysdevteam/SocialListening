@@ -94,9 +94,9 @@ function donut(indi, relleno, container,color) {
 
 // Tabla Library 
 function tabla_tweets(container, data){
-      console.log(data);
+ //     console.log(data);
         var datasetmal = data; 
-        console.log(data)
+        //console.log(data)
         var tabla_tweets = d3.select("#"+container).append("table").attr("class","table" + " " + "m-0");
         var encabezado = tabla_tweets.append("tr");
         encabezado.append("th").attr("colspan","2").text("Usuario");
@@ -106,20 +106,20 @@ function tabla_tweets(container, data){
 
         tabla_tweets2.append("td").attr("class","avatar"+container + " " + "p-2");
         tabla_tweets2.append("td").attr("class",function(d,i){return "user"+container + " " + "p-2";});
-        tabla_tweets2.append("td").attr("class",function(d,i){return "tweet"+container+ " " + " p-2";});
-        tabla_tweets2.append("td").attr("class",function(d,i){return "follower"+container + " " + "p-2";}); 
+        tabla_tweets2.append("td").attr("class",function(d,i){return "value"+container+ " " + " p-2";});
+        tabla_tweets2.append("td").attr("class",function(d,i){return "followers"+container + " " + "p-2";}); 
         d3.selectAll(".avatar"+container).append("img").attr("src","img/avatar.jpg").attr("width","25");
         d3.selectAll(".user"+container).data(data).text(function(d){return d.user;});
-        var span =d3.selectAll(".tweet"+container).append("a").attr("class","tooltips1");
-        var span2 = span.append("div").attr("class", "d-inline-block text-truncate").style("max-width", "415px").style("cursor","pointer").data(data).text(function(d){return d.tweet;});         
+        var span =d3.selectAll(".value"+container).append("a").attr("class","tooltips1");
+        var span2 = span.append("div").attr("class", "d-inline-block text-truncate").style("max-width", "415px").style("cursor","pointer").data(data).text(function(d){return d.value;});         
         span2.append("div");
-        span2.append("span").attr("class","tooltips1").text(function(d){return d.tweet;});
+        span2.append("span").attr("class","tooltips1").text(function(d){return d.value;});
       
       
 
    
 
-        d3.selectAll(".follower"+container).data(data).text(function(d){return d.follower;});
+        d3.selectAll(".followers"+container).data(data).text(function(d){return d.followers;});
         /*d3.selectAll(".ips").data(datasetmal).text(function(d){return d.name.toLowerCase();});
         d3.selectAll(".goodbad").append("i").attr("class","fa fa-chevron-circle-up greencolor");*/
 
@@ -724,20 +724,21 @@ var margin = {top: 20, right: 20, bottom: 30, left: 30},
     height = 150;
 
 // parse the date / time
-var parseTime = d3.timeParse("%Y");
+var parseTime = d3.timeParse("%d");
 
 // set the ranges
-var x = d3.scaleTime().range([0, width]);
+var x = d3.scaleLinear().range([10, width]);
 var y = d3.scaleLinear().range([height, 0]);
+
 
 // define the line
 var valueline = d3.line()
-    .x(function(d) { return x(d.Fecha); })
-    .y(function(d) { return y(d.Positivo); });
+    .x(function(d) { return x(parseInt(d.date)); })
+    .y(function(d) { return y(parseInt(d.positivo)); });
 
 var valueline2 = d3.line()
-    .x(function(d) { return x(d.Fecha); })
-    .y(function(d) { return y(d.Negativo); });
+    .x(function(d) { return x(parseInt(d.date)); })
+    .y(function(d) { return y(parseInt(d.negativo)); });
   
 // append the svg obgect to the body of the page
 // appends a 'group' element to 'svg'
@@ -753,20 +754,22 @@ function draw(data) {
     
   // format the data
   data.forEach(function(d) {
-      d.Fecha = parseTime(d.Fecha);
-      d.Positivo = +d.Positivo;
-      d.Negativo = +d.Negativo;
+      d.date = parseInt(d.date);//parseTime(d.fecha);
+      d.positivo = +d.positivo;
+      d.negativo = +d.negativo;
+      //console.log(d.fecha);
   });
   
   // sort years ascending
   data.sort(function(a, b){
-    return a["Fecha"]-b["Fecha"];
+    //console.log(a["fecha"]);
+    return a["date"]-b["date"];
   })
  
   // Scale the range of the data
-  x.domain(d3.extent(data, function(d) { return d.Fecha; }));
+  x.domain(d3.extent(data, function(d) { return d.date; }));
   y.domain([0, d3.max(data, function(d) {
-    return Math.max(d.Positivo,d.Negativo); })]);
+    return Math.max(d.positivo,d.negativo); })]);
   
   // Add the valueline path.
   svg.append("path")
@@ -778,26 +781,33 @@ function draw(data) {
       .data([data])
       .attr("class", "lineN")
       .attr("d", valueline2);
-console.log(x);
+//console.log(x);
 for(var i=0;i<data.length;i++){
   svg.append("circle")
   .data(data)
-  .attr("cx",x(data[i].Fecha))
-  .attr("cy",y(data[i].Positivo))
+  .attr("cx",x(data[i].date))
+  .attr("cy",y(data[i].positivo))
   .attr("r",4)
   .attr("fill","#66BEE7");
 
    svg.append("circle")
   .data(data)
-  .attr("cx",x(data[i].Fecha))
-  .attr("cy",y(data[i].Negativo))
+  .attr("cx",x(data[i].date))
+  .attr("cy",y(data[i].negativo))
   .attr("r",4)
   .attr("fill","#E17C72");
 };
 
+svg.append("text").text("Día")
+.attr("transform", "translate("+ (width - margin.left - margin.right)/2 + ","+ (height-(-30))+")")
+.style("font-size",12);
   
-  
-
+svg.append("text").text("Cantidad de Tweets")
+.attr("transform", "rotate(-90)")
+.attr("x",((width/2-margin.bottom-margin.left)*-1))
+.attr("y",(margin.right-(-1))*-1)
+//.attr("transform", "translate("+ (margin.left)  + ","+ (height-(-30))/2+")")
+.style("font-size",12);
   // Add the X Axis
   svg.append("g")
       .attr("class", "axisColor")
@@ -807,6 +817,7 @@ for(var i=0;i<data.length;i++){
   // Add the Y Axis
   svg.append("g")
       .attr("class", "axisColor")
+      .attr("transform","translate(10,0)")
       .call(d3.axisLeft(y));
   }
   
@@ -904,16 +915,16 @@ var margin = {top: 20, right: 20, bottom: 33, left: 30},
     height = 155;
 
 // parse the date / time
-var parseTime = d3.timeParse("%Y");
+var parseTime = d3.timeParse("%H");
 
 // set the ranges
-var x = d3.scaleTime().range([0, width]);
+var x = d3.scaleLinear().range([10, width]);
 var y = d3.scaleLinear().range([height, 0]);
 
 // define the line
 var valueline = d3.line()
-    .x(function(d) { return x(d.Fecha); })
-    .y(function(d) { return y(d.Positivo); });
+    .x(function(d) { return x(parseInt(d.time)); })
+    .y(function(d) { return y(d.count); });
 
   
 // append the svg obgect to the body of the page
@@ -930,19 +941,20 @@ function draw(data) {
     
   // format the data
   data.forEach(function(d) {
-      d.Fecha = parseTime(d.Fecha);
-      d.Positivo = +d.Positivo;
+      d.time = parseInt(d.time);//parseTime(d.time);
+      d.count = +d.count;
+      //console.log(d.time);
   });
   
   // sort years ascending
   data.sort(function(a, b){
-    return a["Fecha"]-b["Fecha"];
+    return a["time"]-b["time"];
   })
  
   // Scale the range of the data
-  x.domain(d3.extent(data, function(d) { return d.Fecha; }));
+  x.domain(d3.extent(data, function(d) { return d.time; }));
   y.domain([0, d3.max(data, function(d) {
-    return Math.max(d.Positivo); })]);
+    return Math.max(d.count); })]);
   
   // Add the valueline path.
   svg.append("path")
@@ -953,13 +965,21 @@ function draw(data) {
 for(var i=0;i<data.length;i++){
   svg.append("circle")
   .data(data)
-  .attr("cx",x(data[i].Fecha))
-  .attr("cy",y(data[i].Positivo))
+  .attr("cx",x(data[i].time))
+  .attr("cy",y(data[i].count))
   .attr("r",4)
   .attr("fill","#66BEE7");
 
 };  
-
+  svg.append("text").text("Hora")
+      .attr("transform", "translate("+ (width - margin.left - margin.right)/2 + ","+ (height-(-30))+")")
+      .style("font-size",12);
+  svg.append("text").text("Cantidad de Tweets")
+      .attr("transform", "rotate(-90)")
+      .attr("x",((width/2-margin.bottom-margin.left)*-1))
+      .attr("y",(margin.right-(5))*-1)
+      //.attr("transform", "translate("+ (margin.left)  + ","+ (height-(-30))/2+")")
+      .style("font-size",12);
   // Add the X Axis
   svg.append("g")
       .attr("class", "axisColor")
@@ -969,6 +989,7 @@ for(var i=0;i<data.length;i++){
   // Add the Y Axis
   svg.append("g")
       .attr("class", "axisColor")
+      .attr("transform","translate(10,0)")
       .call(d3.axisLeft(y));
   }
   
