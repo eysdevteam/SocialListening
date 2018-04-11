@@ -4,8 +4,8 @@ app.controller("Positive_Tweets", function ($scope, $http) {
     $http.get("web/PositiveCount/positive.json").then(function(data){
         $scope.indi=data.data
         $scope.relleno = new Array();        
-        $scope.relleno[0] = ($scope.indi[0]/100)*100;
-        $scope.relleno[1] = (1-($scope.indi[0]/100))*100; 
+        $scope.relleno[0] = ($scope.indi[0]/por)*100;
+        $scope.relleno[1] = (1-($scope.indi[0]/por))*100; 
         $scope.relleno[0] = $scope.relleno[0].toFixed(2);
         $scope.relleno[1] = $scope.relleno[1].toFixed(2);
         donut($scope.indi, $scope.relleno, "#Positive_Tweets","rgb(102, 190, 231)");     
@@ -18,8 +18,8 @@ app.controller("Negative_Tweets", function ($scope, $http) {
     $http.get("web/NegativeCount/negative.json").then(function(data){
         $scope.indi=data.data
         $scope.relleno = new Array();        
-        $scope.relleno[0] = ($scope.indi[0]/100)*100;
-        $scope.relleno[1] = (1-($scope.indi[0]/100))*100; 
+        $scope.relleno[0] = ($scope.indi[0]/por)*100;
+        $scope.relleno[1] = (1-($scope.indi[0]/por))*100; 
         $scope.relleno[0] = $scope.relleno[0].toFixed(2);
         $scope.relleno[1] = $scope.relleno[1].toFixed(2);             
         donut($scope.indi, $scope.relleno, "#Negative_Tweets","rgb(225, 124, 114)");     
