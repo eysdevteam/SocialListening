@@ -1,6 +1,7 @@
   import org.apache.spark._
   import org.apache.spark.sql.functions.udf
   import org.apache.spark.sql.functions._  
+  import org.apache.spark.rdd.RDD
   import org.apache.spark.ml.feature.{Tokenizer, StopWordsRemover, HashingTF, IDF}
   import org.apache.spark.mllib.feature.Stemmer
   import org.apache.spark.ml.classification.{LogisticRegression, LinearSVC, NaiveBayes}
@@ -8,7 +9,8 @@
   import org.apache.spark.ml.Pipeline
   import scala.collection.mutable.ArrayBuffer
   import org.apache.hadoop.fs._;
-  
+
+
   
 //READ ALL FILES IN THE DIRECTORY
   val df = spark.read.option("encoding","ISO-8859-1").json("/home/centos/Twitter/collect/")
@@ -23,7 +25,24 @@
 //**CREATE DATA TO EXPORT
 
   //Export map
-  val df3 = df2.groupBy("location").count
+      //Read file zone time-country
+      case class Obs5( k1: String, k2: String)
+
+      def parseObs5(line: Array[String]): Obs5 = {
+        Obs5( line(0), line(1) ) }
+
+      def parseRDD5(rdd: RDD[String]): RDD[Array[String]] = {
+        rdd.map(_.split(",")).map(_.drop(0)).map(_.map(_.toString))}
+      
+      val rdd5 = sc.textFile("/home/centos/Twitter/paises.txt")
+
+      val Obs5RDD = parseRDD5(rdd5).map(parseObs5)
+      
+      val df5 = Obs5RDD.toDF().cache()
+  
+  val df30  = df2.groupBy("location").count
+  val df31  = df30.join(df5).where(df30("location")===df5("k1")).drop("location","k1").withColumnRenamed("k2","location")
+  val df3   = df31.groupBy("location").sum().withColumnRenamed("sum(count)","count")
   val total = df2.where($"location"!=="null").count/5
   val b =  Array(total,total*2,total*3,total*4,total*5)
   val a =  Array(1,1+total*1,1+total*2,1+total*3,1+total*4,1+total*5)
@@ -123,267 +142,267 @@
     fs.rename(new Path("/var/www/html/SentimentAnalytics/web/TweetsHour/"+file), new Path("/var/www/html/SentimentAnalytics/web/TweetsHour/hour.json"));
     
 
-//**PREDICTIONS MODELS**
-
-  //DEFINE TRAINING AND TEST DATA
-  val Array(trainingData, testData) = df2.randomSplit(Array(0.7, 0.3),5043)
-
-  //LOAD DICTIONARY 
-  val filter = StopWordsRemover.loadDefaultStopWords("spanish")
-
-  //DEFINE STAGES OF THE PIPELINE 
-  val tokenizer = new Tokenizer().setInputCol("value").setOutputCol("words")
-  val remover = new StopWordsRemover().setInputCol("words").setOutputCol("removed").setStopWords(filter)
-  val stemmer = new Stemmer().setInputCol("removed").setOutputCol("stemmed").setLanguage("Spanish")
-  val hashingTF = new HashingTF().setInputCol("stemmed").setOutputCol("rawFeatures").setNumFeatures(128)
-  val idf = new IDF().setInputCol("rawFeatures").setOutputCol("features")
-
-//VARIABLES
-
-  //Logistic Regression
-   val bestf1scorelr    	  = new ArrayBuffer[Double]()
-   val bestespelr      	  = new ArrayBuffer[Double]()
-   val bestsencilr    	    = new ArrayBuffer[Double]()
-   val bestpreclr      	  = new ArrayBuffer[Double]()
-   val bestnpreclr     	  = new ArrayBuffer[Double]()
-   val besttruePlr     	  = new ArrayBuffer[Double]()
-   val besttrueNlr     	  = new ArrayBuffer[Double]()
-   val bestfalsePlr    	  = new ArrayBuffer[Double]()
-   val bestfalseNlr    	  = new ArrayBuffer[Double]()
-   val bestROClr     	    = new ArrayBuffer[Double]()
-   val bestReglr          = new ArrayBuffer[Double]()
-    
-   bestf1scorelr  += 0
-   
- //SVM
-   val bestf1scoresvm    	  = new ArrayBuffer[Double]()
-   val bestespesvm     	    = new ArrayBuffer[Double]()
-   val bestsencisvm    	    = new ArrayBuffer[Double]()
-   val bestprecsvm      	  = new ArrayBuffer[Double]()
-   val bestnprecsvm     	  = new ArrayBuffer[Double]()
-   val besttruePsvm     	  = new ArrayBuffer[Double]()
-   val besttrueNsvm     	  = new ArrayBuffer[Double]()
-   val bestfalsePsvm    	  = new ArrayBuffer[Double]()
-   val bestfalseNsvm    	  = new ArrayBuffer[Double]()
-   val bestROCsvm     	    = new ArrayBuffer[Double]()
-   val bestRegsvm            = new ArrayBuffer[Double]()
-   
-   bestf1scoresvm  += 0
-   
- //Naive Bayes
-   val bestf1scorenb    	= new ArrayBuffer[Double]()
-   val bestespenb     	  = new ArrayBuffer[Double]()
-   val bestsencinb    	  = new ArrayBuffer[Double]()
-   val bestprecnb      	  = new ArrayBuffer[Double]()
-   val bestnprecnb     	  = new ArrayBuffer[Double]()
-   val besttruePnb     	  = new ArrayBuffer[Double]()
-   val besttrueNnb     	  = new ArrayBuffer[Double]()
-   val bestfalsePnb    	  = new ArrayBuffer[Double]()
-   val bestfalseNnb    	  = new ArrayBuffer[Double]()
-   val bestROCnb     	    = new ArrayBuffer[Double]()
-   val bestRegnb          = new ArrayBuffer[Double]()
-   
-   bestf1scorenb  += 0
-   
-for (b<-0 to 10)
-{
-			val RegParam = b*0.1
-    
-			
-      //Logistic regression Model
-      val lr = new LogisticRegression().setMaxIter(1000).setRegParam(RegParam).setFeaturesCol("features").setLabelCol("label")
-      //SVM Model
-      val lsvm = new LinearSVC().setMaxIter(1000).setRegParam(RegParam).setFeaturesCol("features").setLabelCol("label")
-      //Naive Bayes Model
-      val nb = new NaiveBayes()
-
-      
-      //logistic regression Pipeline
-      val pipelinelr  = new Pipeline().setStages(Array(tokenizer, remover, stemmer, hashingTF, idf, lr))
-      //SVM Pipeline
-      val pipelinesvm = new Pipeline().setStages(Array(tokenizer, remover, stemmer, hashingTF, idf, lsvm))
-      //Naive Bayes Pipeline
-      val pipelinenb = new Pipeline().setStages(Array(tokenizer, remover, stemmer, hashingTF, idf, nb))
-      
-      
-      //Logistic Regression Fit Model
-      val modellr  = pipelinelr.fit(trainingData)
-      //SVM Fit Model
-      val modelsvm = pipelinesvm.fit(trainingData)
-      //Naive Bayes Fit Model
-      val modelnb = pipelinenb.fit(trainingData)
-      
-      
-      //Logistic Regression Test Model
-      val predictionslr  = modellr.transform(testData)
-      //SVM Test Model
-      val predictionssvm = modelsvm.transform(testData)
-      //Naive Bayes Test Model
-      val predictionsnb = modelnb.transform(testData)
-      
-      
-      //Evaluator Models
-      val evaluator = new BinaryClassificationEvaluator().setLabelCol("label").setRawPredictionCol("prediction")
-      
-      //Logistic Regression Evaluation
-      val lplr = predictionslr.select( "label", "prediction")
-      
-      val truePlr  = lplr.filter($"prediction" === 1.0).filter($"label" === $"prediction").count().toDouble
-      val trueNlr  = lplr.filter($"prediction" === 0.0).filter($"label" === $"prediction").count().toDouble
-      val falseNlr = lplr.filter($"prediction" === 0.0).filter(not($"label" === $"prediction")).count().toDouble
-      val falsePlr = lplr.filter($"prediction" === 1.0).filter(not($"label" === $"prediction")).count().toDouble
-      
-      val especlr = trueNlr/(trueNlr+falsePlr)
-      val sensilr = truePlr/(truePlr+falseNlr)
-      val precilr = truePlr/(truePlr+falsePlr)
-      val npreclr = trueNlr/(trueNlr+falseNlr)
-      
-      val f1scorelr    = 2*(precilr*sensilr)/(precilr+sensilr)
-      val area_under_ROClr = evaluator.evaluate(predictionslr)
-      
-      //SVM Evaluation
-      val lpsvm = predictionssvm.select( "label", "prediction")
-
-      val truePsvm  = lpsvm.filter($"prediction" === 1.0).filter($"label" === $"prediction").count().toDouble
-      val trueNsvm  = lpsvm.filter($"prediction" === 0.0).filter($"label" === $"prediction").count().toDouble
-      val falseNsvm = lpsvm.filter($"prediction" === 0.0).filter(not($"label" === $"prediction")).count().toDouble
-      val falsePsvm = lpsvm.filter($"prediction" === 1.0).filter(not($"label" === $"prediction")).count().toDouble
-
-      val especsvm = trueNsvm/(trueNsvm+falsePsvm)
-      val sensisvm = truePsvm/(truePsvm+falseNsvm)
-      val precisvm = truePsvm/(truePsvm+falsePsvm)
-      val nprecsvm = trueNsvm/(trueNsvm+falseNsvm)
-
-      val f1scoresvm    = 2*(precisvm*sensisvm)/(precisvm+sensisvm)
-      val area_under_ROCsvm = evaluator.evaluate(predictionssvm)
-    
-      //Naive Bayes Evaluation
-      val lpnb = predictionsnb.select( "label", "prediction")
-
-      val truePnb  = lpnb.filter($"prediction" === 1.0).filter($"label" === $"prediction").count().toDouble
-      val trueNnb  = lpnb.filter($"prediction" === 0.0).filter($"label" === $"prediction").count().toDouble
-      val falseNnb = lpnb.filter($"prediction" === 0.0).filter(not($"label" === $"prediction")).count().toDouble
-      val falsePnb = lpnb.filter($"prediction" === 1.0).filter(not($"label" === $"prediction")).count().toDouble
-
-      val especnb = trueNnb/(trueNnb+falsePnb)
-      val sensinb = truePnb/(truePnb+falseNnb)
-      val precinb = truePnb/(truePnb+falsePnb)
-      val nprecnb = trueNnb/(trueNnb+falseNnb)
-
-      val f1scorenb    = 2*(precinb*sensinb)/(precinb+sensinb)
-      val area_under_ROCnb = evaluator.evaluate(predictionsnb)
-    
-      //Logistic Regression Best Model
-      if( f1scorelr > bestf1scorelr.last)
-      			{
-                bestf1scorelr	  +=   f1scorelr
-                bestespelr  	  +=   especlr
-                bestsencilr  	  +=   sensilr
-                bestpreclr  	  +=   precilr
-                bestnpreclr  	  +=   npreclr
-                besttruePlr  	  +=   truePlr
-                besttrueNlr  	  +=   trueNlr
-                bestfalsePlr 	  +=   falsePlr
-                bestfalseNlr 	  +=   falseNlr
-                bestROClr       +=   area_under_ROClr
-                bestReglr       +=   RegParam
-                 }
-            
-      //SVM Best Model
-      if( f1scoresvm > bestf1scoresvm.last)
-      			{
-                bestf1scoresvm	+=   f1scoresvm
-                bestespesvm 	  +=   especsvm
-                bestsencisvm    +=   sensisvm
-                bestprecsvm     +=   precisvm
-                bestnprecsvm 	  +=   nprecsvm
-                besttruePsvm  	+=   truePsvm
-                besttrueNsvm 	  +=   trueNsvm
-                bestfalsePsvm 	+=   falsePsvm
-                bestfalseNsvm 	+=   falseNsvm
-                bestROCsvm      +=   area_under_ROCsvm    
-                bestRegsvm      +=   RegParam
-             }
-             
-      //Naive Bayes Best Model
-      if( f1scorenb > bestf1scorenb.last)
-      			{
-                bestf1scorenb	+=   f1scorenb
-                bestespenb 	  +=   especnb
-                bestsencinb   +=   sensinb
-                bestprecnb    +=   precinb
-                bestnprecnb 	+=   nprecnb
-                besttruePnb  	+=   truePnb
-                besttrueNnb 	+=   trueNnb
-                bestfalsePnb 	+=   falsePnb
-                bestfalseNnb 	+=   falseNnb
-                bestROCnb     +=   area_under_ROCnb    
-                bestRegnb     +=   RegParam
-             }
-  
-}
-
-println("")
-println("*********RESULTS LR")
-println("******")
-println("***")
-
-
-println("F1 score is      :  "+bestf1scorelr.last)
-println("ROC              :  "+bestROClr.last)
-println("Specificity is   :  "+bestespelr.last)
-println("Sensitivity is   :  "+bestsencilr.last)
-println("Precision        :  "+bestpreclr.last)
-println("Neg. Precision   :  "+bestnpreclr.last)
-println("True Pos.        :  "+besttruePlr.last)
-println("True Neg.        :  "+besttrueNlr.last)
-println("False Pos.       :  "+bestfalsePlr.last)
-println("False Neg.       :  "+bestfalseNlr.last)
-println("*")
-println("***")
-println("******")
-println("*********")
-
-println("")
-println("*********RESULTS SVM")
-println("******")
-println("***")
-
-
-println("F1 score is      :  "+bestf1scoresvm.last)
-println("ROC              :  "+bestROCsvm.last)
-println("Specificity is   :  "+bestespesvm.last)
-println("Sensitivity is   :  "+bestsencisvm.last)
-println("Precision        :  "+bestprecsvm.last)
-println("Neg. Precision   :  "+bestnprecsvm.last)
-println("True Pos.        :  "+besttruePsvm.last)
-println("True Neg.        :  "+besttrueNsvm.last)
-println("False Pos.       :  "+bestfalsePsvm.last)
-println("False Neg.       :  "+bestfalseNsvm.last)
-println("*")
-println("***")
-println("******")
-println("*********")
-
-println("")
-println("*********RESULTS NAIVE BAYES")
-println("******")
-println("***")
-
-
-println("F1 score is      :  "+bestf1scorenb.last)
-println("ROC              :  "+bestROCnb.last)
-println("Specificity is   :  "+bestespenb.last)
-println("Sensitivity is   :  "+bestsencinb.last)
-println("Precision        :  "+bestprecnb.last)
-println("Neg. Precision   :  "+bestnprecnb.last)
-println("True Pos.        :  "+besttruePnb.last)
-println("True Neg.        :  "+besttrueNnb.last)
-println("False Pos.       :  "+bestfalsePnb.last)
-println("False Neg.       :  "+bestfalseNnb.last)
-println("*")
-println("***")
-println("******")
-println("*********")
+////**PREDICTIONS MODELS**
+//
+//  //DEFINE TRAINING AND TEST DATA
+//  val Array(trainingData, testData) = df2.randomSplit(Array(0.7, 0.4),5043)
+//
+//  //LOAD DICTIONARY 
+//  val filter = StopWordsRemover.loadDefaultStopWords("spanish")
+//
+//  //DEFINE STAGES OF THE PIPELINE 
+//  val tokenizer = new Tokenizer().setInputCol("value").setOutputCol("words")
+//  val remover = new StopWordsRemover().setInputCol("words").setOutputCol("removed").setStopWords(filter)
+//  val stemmer = new Stemmer().setInputCol("removed").setOutputCol("stemmed").setLanguage("Spanish")
+//  val hashingTF = new HashingTF().setInputCol("stemmed").setOutputCol("rawFeatures").setNumFeatures(128)
+//  val idf = new IDF().setInputCol("rawFeatures").setOutputCol("features")
+//
+////VARIABLES
+//
+//  //Logistic Regression
+//   val bestf1scorelr    	  = new ArrayBuffer[Double]()
+//   val bestespelr      	  = new ArrayBuffer[Double]()
+//   val bestsencilr    	    = new ArrayBuffer[Double]()
+//   val bestpreclr      	  = new ArrayBuffer[Double]()
+//   val bestnpreclr     	  = new ArrayBuffer[Double]()
+//   val besttruePlr     	  = new ArrayBuffer[Double]()
+//   val besttrueNlr     	  = new ArrayBuffer[Double]()
+//   val bestfalsePlr    	  = new ArrayBuffer[Double]()
+//   val bestfalseNlr    	  = new ArrayBuffer[Double]()
+//   val bestROClr     	    = new ArrayBuffer[Double]()
+//   val bestReglr          = new ArrayBuffer[Double]()
+//    
+//   bestf1scorelr  += 0
+//   
+// //SVM
+//   val bestf1scoresvm    	  = new ArrayBuffer[Double]()
+//   val bestespesvm     	    = new ArrayBuffer[Double]()
+//   val bestsencisvm    	    = new ArrayBuffer[Double]()
+//   val bestprecsvm      	  = new ArrayBuffer[Double]()
+//   val bestnprecsvm     	  = new ArrayBuffer[Double]()
+//   val besttruePsvm     	  = new ArrayBuffer[Double]()
+//   val besttrueNsvm     	  = new ArrayBuffer[Double]()
+//   val bestfalsePsvm    	  = new ArrayBuffer[Double]()
+//   val bestfalseNsvm    	  = new ArrayBuffer[Double]()
+//   val bestROCsvm     	    = new ArrayBuffer[Double]()
+//   val bestRegsvm            = new ArrayBuffer[Double]()
+//   
+//   bestf1scoresvm  += 0
+//   
+// //Naive Bayes
+//   val bestf1scorenb    	= new ArrayBuffer[Double]()
+//   val bestespenb     	  = new ArrayBuffer[Double]()
+//   val bestsencinb    	  = new ArrayBuffer[Double]()
+//   val bestprecnb      	  = new ArrayBuffer[Double]()
+//   val bestnprecnb     	  = new ArrayBuffer[Double]()
+//   val besttruePnb     	  = new ArrayBuffer[Double]()
+//   val besttrueNnb     	  = new ArrayBuffer[Double]()
+//   val bestfalsePnb    	  = new ArrayBuffer[Double]()
+//   val bestfalseNnb    	  = new ArrayBuffer[Double]()
+//   val bestROCnb     	    = new ArrayBuffer[Double]()
+//   val bestRegnb          = new ArrayBuffer[Double]()
+//   
+//   bestf1scorenb  += 0
+//   
+//for (b<-0 to 10)
+//{
+//			val RegParam = b*0.1
+//    
+//			
+//      //Logistic regression Model
+//      val lr = new LogisticRegression().setMaxIter(1000).setRegParam(RegParam).setFeaturesCol("features").setLabelCol("label")
+//      //SVM Model
+//      val lsvm = new LinearSVC().setMaxIter(1000).setRegParam(RegParam).setFeaturesCol("features").setLabelCol("label")
+//      //Naive Bayes Model
+//      val nb = new NaiveBayes()
+//
+//      
+//      //logistic regression Pipeline
+//      val pipelinelr  = new Pipeline().setStages(Array(tokenizer, remover, stemmer, hashingTF, idf, lr))
+//      //SVM Pipeline
+//      val pipelinesvm = new Pipeline().setStages(Array(tokenizer, remover, stemmer, hashingTF, idf, lsvm))
+//      //Naive Bayes Pipeline
+//      val pipelinenb = new Pipeline().setStages(Array(tokenizer, remover, stemmer, hashingTF, idf, nb))
+//      
+//      
+//      //Logistic Regression Fit Model
+//      val modellr  = pipelinelr.fit(trainingData)
+//      //SVM Fit Model
+//      val modelsvm = pipelinesvm.fit(trainingData)
+//      //Naive Bayes Fit Model
+//      val modelnb = pipelinenb.fit(trainingData)
+//      
+//      
+//      //Logistic Regression Test Model
+//      val predictionslr  = modellr.transform(testData)
+//      //SVM Test Model
+//      val predictionssvm = modelsvm.transform(testData)
+//      //Naive Bayes Test Model
+//      val predictionsnb = modelnb.transform(testData)
+//      
+//      
+//      //Evaluator Models
+//      val evaluator = new BinaryClassificationEvaluator().setLabelCol("label").setRawPredictionCol("prediction")
+//      
+//      //Logistic Regression Evaluation
+//      val lplr = predictionslr.select( "label", "prediction")
+//      
+//      val truePlr  = lplr.filter($"prediction" === 1.0).filter($"label" === $"prediction").count().toDouble
+//      val trueNlr  = lplr.filter($"prediction" === 0.0).filter($"label" === $"prediction").count().toDouble
+//      val falseNlr = lplr.filter($"prediction" === 0.0).filter(not($"label" === $"prediction")).count().toDouble
+//      val falsePlr = lplr.filter($"prediction" === 1.0).filter(not($"label" === $"prediction")).count().toDouble
+//      
+//      val especlr = trueNlr/(trueNlr+falsePlr)
+//      val sensilr = truePlr/(truePlr+falseNlr)
+//      val precilr = truePlr/(truePlr+falsePlr)
+//      val npreclr = trueNlr/(trueNlr+falseNlr)
+//      
+//      val f1scorelr    = 2*(precilr*sensilr)/(precilr+sensilr)
+//      val area_under_ROClr = evaluator.evaluate(predictionslr)
+//      
+//      //SVM Evaluation
+//      val lpsvm = predictionssvm.select( "label", "prediction")
+//
+//      val truePsvm  = lpsvm.filter($"prediction" === 1.0).filter($"label" === $"prediction").count().toDouble
+//      val trueNsvm  = lpsvm.filter($"prediction" === 0.0).filter($"label" === $"prediction").count().toDouble
+//      val falseNsvm = lpsvm.filter($"prediction" === 0.0).filter(not($"label" === $"prediction")).count().toDouble
+//      val falsePsvm = lpsvm.filter($"prediction" === 1.0).filter(not($"label" === $"prediction")).count().toDouble
+//
+//      val especsvm = trueNsvm/(trueNsvm+falsePsvm)
+//      val sensisvm = truePsvm/(truePsvm+falseNsvm)
+//      val precisvm = truePsvm/(truePsvm+falsePsvm)
+//      val nprecsvm = trueNsvm/(trueNsvm+falseNsvm)
+//
+//      val f1scoresvm    = 2*(precisvm*sensisvm)/(precisvm+sensisvm)
+//      val area_under_ROCsvm = evaluator.evaluate(predictionssvm)
+//    
+//      //Naive Bayes Evaluation
+//      val lpnb = predictionsnb.select( "label", "prediction")
+//
+//      val truePnb  = lpnb.filter($"prediction" === 1.0).filter($"label" === $"prediction").count().toDouble
+//      val trueNnb  = lpnb.filter($"prediction" === 0.0).filter($"label" === $"prediction").count().toDouble
+//      val falseNnb = lpnb.filter($"prediction" === 0.0).filter(not($"label" === $"prediction")).count().toDouble
+//      val falsePnb = lpnb.filter($"prediction" === 1.0).filter(not($"label" === $"prediction")).count().toDouble
+//
+//      val especnb = trueNnb/(trueNnb+falsePnb)
+//      val sensinb = truePnb/(truePnb+falseNnb)
+//      val precinb = truePnb/(truePnb+falsePnb)
+//      val nprecnb = trueNnb/(trueNnb+falseNnb)
+//
+//      val f1scorenb    = 2*(precinb*sensinb)/(precinb+sensinb)
+//      val area_under_ROCnb = evaluator.evaluate(predictionsnb)
+//    
+//      //Logistic Regression Best Model
+//      if( f1scorelr > bestf1scorelr.last)
+//      			{
+//                bestf1scorelr	  +=   f1scorelr
+//                bestespelr  	  +=   especlr
+//                bestsencilr  	  +=   sensilr
+//                bestpreclr  	  +=   precilr
+//                bestnpreclr  	  +=   npreclr
+//                besttruePlr  	  +=   truePlr
+//                besttrueNlr  	  +=   trueNlr
+//                bestfalsePlr 	  +=   falsePlr
+//                bestfalseNlr 	  +=   falseNlr
+//                bestROClr       +=   area_under_ROClr
+//                bestReglr       +=   RegParam
+//                 }
+//            
+//      //SVM Best Model
+//      if( f1scoresvm > bestf1scoresvm.last)
+//      			{
+//                bestf1scoresvm	+=   f1scoresvm
+//                bestespesvm 	  +=   especsvm
+//                bestsencisvm    +=   sensisvm
+//                bestprecsvm     +=   precisvm
+//                bestnprecsvm 	  +=   nprecsvm
+//                besttruePsvm  	+=   truePsvm
+//                besttrueNsvm 	  +=   trueNsvm
+//                bestfalsePsvm 	+=   falsePsvm
+//                bestfalseNsvm 	+=   falseNsvm
+//                bestROCsvm      +=   area_under_ROCsvm    
+//                bestRegsvm      +=   RegParam
+//             }
+//             
+//      //Naive Bayes Best Model
+//      if( f1scorenb > bestf1scorenb.last)
+//      			{
+//                bestf1scorenb	+=   f1scorenb
+//                bestespenb 	  +=   especnb
+//                bestsencinb   +=   sensinb
+//                bestprecnb    +=   precinb
+//                bestnprecnb 	+=   nprecnb
+//                besttruePnb  	+=   truePnb
+//                besttrueNnb 	+=   trueNnb
+//                bestfalsePnb 	+=   falsePnb
+//                bestfalseNnb 	+=   falseNnb
+//                bestROCnb     +=   area_under_ROCnb    
+//                bestRegnb     +=   RegParam
+//             }
+//  
+//}
+//
+//println("")
+//println("*********RESULTS LR")
+//println("******")
+//println("***")
+//
+//
+//println("F1 score is      :  "+bestf1scorelr.last)
+//println("ROC              :  "+bestROClr.last)
+//println("Specificity is   :  "+bestespelr.last)
+//println("Sensitivity is   :  "+bestsencilr.last)
+//println("Precision        :  "+bestpreclr.last)
+//println("Neg. Precision   :  "+bestnpreclr.last)
+//println("True Pos.        :  "+besttruePlr.last)
+//println("True Neg.        :  "+besttrueNlr.last)
+//println("False Pos.       :  "+bestfalsePlr.last)
+//println("False Neg.       :  "+bestfalseNlr.last)
+//println("*")
+//println("***")
+//println("******")
+//println("*********")
+//
+//println("")
+//println("*********RESULTS SVM")
+//println("******")
+//println("***")
+//
+//
+//println("F1 score is      :  "+bestf1scoresvm.last)
+//println("ROC              :  "+bestROCsvm.last)
+//println("Specificity is   :  "+bestespesvm.last)
+//println("Sensitivity is   :  "+bestsencisvm.last)
+//println("Precision        :  "+bestprecsvm.last)
+//println("Neg. Precision   :  "+bestnprecsvm.last)
+//println("True Pos.        :  "+besttruePsvm.last)
+//println("True Neg.        :  "+besttrueNsvm.last)
+//println("False Pos.       :  "+bestfalsePsvm.last)
+//println("False Neg.       :  "+bestfalseNsvm.last)
+//println("*")
+//println("***")
+//println("******")
+//println("*********")
+//
+//println("")
+//println("*********RESULTS NAIVE BAYES")
+//println("******")
+//println("***")
+//
+//
+//println("F1 score is      :  "+bestf1scorenb.last)
+//println("ROC              :  "+bestROCnb.last)
+//println("Specificity is   :  "+bestespenb.last)
+//println("Sensitivity is   :  "+bestsencinb.last)
+//println("Precision        :  "+bestprecnb.last)
+//println("Neg. Precision   :  "+bestnprecnb.last)
+//println("True Pos.        :  "+besttruePnb.last)
+//println("True Neg.        :  "+besttrueNnb.last)
+//println("False Pos.       :  "+bestfalsePnb.last)
+//println("False Neg.       :  "+bestfalseNnb.last)
+//println("*")
+//println("***")
+//println("******")
+//println("*********")
 
 System.exit(0) 

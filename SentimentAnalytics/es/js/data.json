@@ -1,0 +1,8 @@
+[
+            {"seccion":"Sección 1","valor":[1],"preguntas": ["pregunta3"]},
+            {"seccion":"Sección 1","valor":[1],"preguntas": ["pregunta2"]},
+            {"seccion":"Sección 1","valor":[1],"preguntas": ["pregunta1"]},
+            {"seccion":"Sección 1","valor":[1],"preguntas": ["pregunta1"]},
+            {"seccion":"Sección 1","valor":[5],"preguntas": ["pregunta1","pregunta2","pregunta3","pregunta4","pregunta5"]}
+        
+    ]

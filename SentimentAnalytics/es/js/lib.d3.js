@@ -77,11 +77,11 @@ function donut(indi, relleno, container,color) {
   var centrado;
 
   if(container === "#Positive_Tweets"){
-    titulo = "Positive";
+    titulo = "Positivos";
     centrado = ((radius/2)*-1)+2;
   }
   else{
-    titulo = "Negative";
+    titulo = "Negativos";
     centrado = ((radius/2)*-1)
   }
     
@@ -96,9 +96,9 @@ function donut(indi, relleno, container,color) {
 function tabla_tweets(container, data){
         var tabla_tweets = d3.select("#"+container).append("table").attr("class","table" + " " + "m-0");
         var encabezado = tabla_tweets.append("tr");
-        encabezado.append("th").attr("colspan","2").text("User");
+        encabezado.append("th").attr("colspan","2").text("Usuario");
         encabezado.append("th").text("Tweet");
-        encabezado.append("th").text("Followers");
+        encabezado.append("th").text("Seguidores");
         var tabla_tweets2 = tabla_tweets.selectAll(".tr").data(data).enter().append("tr").attr("class","tabla-tweets"+container);      
 
         tabla_tweets2.append("td").attr("class","avatar"+container + " " + "p-2");
@@ -812,11 +812,11 @@ for(var i=0;i<data.length;i++){
   .attr("fill","#E17C72");
 };
 
-svg.append("text").text("Day")
-.attr("transform", "translate("+ (width - margin.left - margin.right)/2 + ","+ (height-(-25))+")")
+svg.append("text").text("Día")
+.attr("transform", "translate("+ (width - margin.left - margin.right)/2 + ","+ (height-(-30))+")")
 .style("font-size",12);
   
-svg.append("text").text("Number of Tweets")
+svg.append("text").text("Cantidad de Tweets")
 .attr("transform", "rotate(-90)")
 .attr("x",((width/2-margin.bottom-margin.left)*-1))
 .attr("y",(margin.right-(-1))*-1)
@@ -882,7 +882,7 @@ width = 900;//parseInt(d3.select(container).style("width"));
       // Ciclo de comparación entre json guia y json generado por modelo
       for (var i = 0 ; i < compara.length; i++) {
           if(compara[i].location.toLowerCase()=="null"){
-		 var textw= svg.append("text").text("Note:Tweets without available localization:"+ "" + compara[i].count)
+		 var textw= svg.append("text").text("Note:Tweets sin localización disponible:"+ "" + compara[i].count)
               .attr("transform", function(d) {return "translate(" + projection([-171,-62]) + ")";})
               .style("font-size","12")
               .style("font-family", "'Quicksand', sans-serif");
@@ -911,7 +911,7 @@ width = 900;//parseInt(d3.select(container).style("width"));
           
           return'img/twitter'+ d.categ+'.png'})
         .attr("transform", function(d) {return "translate(" + projection([d.lng-4.5,d.lat-(-5.00)]) + ")";})
-        .append("title").text(function(d) {return d.name +"\n"+"Total of tweets:"+" "+d.cant;});
+        .append("title").text(function(d) {return d.name +"\n"+"Total de tweets:"+" "+d.cant;});
       // Generación de convenciones
       var imagenconv = svg.append("image")
         .attr('width', width/11)
@@ -989,10 +989,10 @@ for(var i=0;i<data.length;i++){
   .attr("fill","#66BEE7");
 
 };  
-  svg.append("text").text("Hour")
+  svg.append("text").text("Hora")
       .attr("transform", "translate("+ (width - margin.left - margin.right)/2 + ","+ (height-(-30))+")")
       .style("font-size",12);
-  svg.append("text").text("Number of Tweets")
+  svg.append("text").text("Cantidad de Tweets")
       .attr("transform", "rotate(-90)")
       .attr("x",((width/2-margin.bottom-margin.left)*-1))
       .attr("y",(margin.right-(5))*-1)

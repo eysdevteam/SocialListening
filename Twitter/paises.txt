@@ -1,0 +1,140 @@
+midway island,as
+samoa,ws
+hawaii,us
+alaska,us
+pacific time (us & canada),us
+tijuana,mx
+arizona,us
+mountain time (us & canada),us
+chihuahua,mx
+mazatlan,mx
+saskatchewan,ca
+central america,mx
+central time (us & canada),us
+guadalajara,mx
+mexico city,mx
+monterrey,mx
+bogota,co
+lima,pe
+quito,ec
+eastern time (us & canada,us
+indiana,us
+caracas,ve
+la paz,bo
+georgetown,us
+atlantic time (canada),ca
+santiago,cl
+brasilia,br
+buenos aires,ar
+newfoundland,ca
+greenland,us
+mid-atlantic,gs
+cape verde,cv
+azores,pt
+monrovia,lr
+dublin,ie
+edinburgh,gb
+lisbon,pt
+london,gb
+casablanca,ma
+west central africa,dz
+Belgrade,rs
+bratislava,sk
+budapest,hu
+ljubljana,si
+prague,cz
+sarajevo,ba
+Skopje,mk
+warsaw,pl
+zagreb,hr
+brussels,be
+copenhagen,dk
+madrid,es
+paris,fr
+amsterdam,nl
+berlin,de
+bern,ch
+rome,it
+stockholm,se
+vienna,at
+cairo,eg
+harare,zw
+pretoria,za
+bucharest,ro
+helsinki,fi
+kiev,ua
+kyiv,ua
+riga,lv
+sofia,bg
+tallinn,ee
+vilnius,lt
+athens,gr
+istanbul,tr
+jerusalem,il
+moscow,ru
+st. Petersburg,ru
+volgograd,ru
+kuwait,kw
+riyadh,sa
+nairobi,ke
+baghdad,iq
+abu dhabi,ae
+muscat,om
+baku,az
+tbilisi,ge
+yerevan,am
+tehran,ir
+kabul,af
+ekaterinburg,ru
+islamabad,pk
+tashkent,uz
+chennai,in
+kolkata,in
+mumbai,in
+new delhi,in
+sri jayawardenepura,lk
+kathmandu,np
+astana,uz
+dhaka,bd
+almaty,kz
+urumqi,cn
+rangoon,mm
+novosibirsk,ru
+bangkok,th
+hanoi,vn
+jakarta,id
+krasnoyarsk,ru
+beijing,cn
+chongqing,cn
+hong kong,cn
+kuala lumpur,my
+singapore,sg
+taipei,cn
+perth,au
+irkutsk,ru
+ulaan,mn
+seoul,kr
+osaka,jp
+sapporo,jp
+tokyo,jp
+yakutsk,ru
+darwin,au
+adelaide,au
+canberra,au
+melbourne,au
+sydney,au
+brisbane,au
+hobart,au
+vladivostok,ru
+port moresby,pg
+guam,gu
+solomon,sb
+magadan,ru
+new caledonia,nc
+fiji,fj
+kamchatka,ru
+marshall is.,mh
+auckland,nz
+wellington,nz
+nuku'alofa,to
+null,null

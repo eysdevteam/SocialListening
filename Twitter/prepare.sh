@@ -37,3 +37,7 @@ sudo sed -i "\$a]"      /var/www/html/SentimentAnalytics/web/TweetsHour/hour.jso
 sudo sed -i '$!s/$/,/'  /var/www/html/SentimentAnalytics/web/Volumen/vol.json ##coma en todas excepto la ultima
 sudo sed -i '1s/^/[/'   /var/www/html/SentimentAnalytics/web/Volumen/vol.json ##[ al comienzo del archivo
 sudo sed -i "\$a]"      /var/www/html/SentimentAnalytics/web/Volumen/vol.json ##]al finnal
+
+sudo rm -r /var/www/html/SentimentAnalytics/es/web
+sudo cp -r /var/www/html/SentimentAnanytics/web /var/www/html/SentimentAnalytics/es/
+
